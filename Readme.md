@@ -1,4 +1,3 @@
-
 # Koa OAuth Server
 
 Complete, compliant and well tested module for implementing an OAuth2 Server/Provider with [koa](https://github.com/koajs/koa) in [node.js](http://nodejs.org/)
@@ -7,7 +6,7 @@ This is the koa wrap for: https://github.com/thomseddon/node-oauth2-server
 
 ## Installation
 
-  $ npm install node-oauth2-server
+  $ npm install koa-oauth-server
 
 ## Quick Start
 
