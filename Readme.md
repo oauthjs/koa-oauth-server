@@ -1,4 +1,4 @@
-# Koa OAuth Server
+# Koa OAuth Server [![Build Status](https://travis-ci.org/thomseddon/koa-oauth-server.png?branch=master)](https://travis-ci.org/thomseddon/koa-oauth-server)
 
 Complete, compliant and well tested module for implementing an OAuth2 Server/Provider with [koa](https://github.com/koajs/koa) in [node.js](http://nodejs.org/)
 
