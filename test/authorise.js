@@ -190,6 +190,47 @@ describe('Authorise', function() {
     });
   });
 
+  describe('Error Handler', function () {
+
+    it('should return an oauth conformat response', function (done) {
+      var app = bootstrap();
+
+      request(app.listen())
+        .get('/')
+        .expect(400)
+        .end(function (err, res) {
+          if (err) return done(err);
+
+          res.body.should.have.keys('code', 'error', 'error_description');
+
+          res.body.code.should.be.a.Number;
+          res.body.code.should.equal(res.statusCode);
+
+          res.body.error.should.be.a.String;
+
+          res.body.error_description.should.be.a.String;
+
+          done();
+        });
+    });
+
+    it('should passthrough authorise errors', function (done) {
+      var app = bootstrap({
+        passthroughErrors: true,
+        model: {}
+      });
+
+      app.use(function *(next) {
+        this.body = 'passthrough';
+        yield next;
+      });
+
+      request(app.listen())
+        .get('/')
+        .expect(200, /^passthrough$/, done);
+    });
+  });
+
   it('should expose the user_id', function (done) {
     var app = bootstrap({
       model: {
