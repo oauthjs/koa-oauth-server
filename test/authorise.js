@@ -170,6 +170,28 @@ describe('Authorise', function() {
         .expect(/nightworld/, 200, done);
     });
 
+    it('should passthrough with a valid token from the header', function (done){
+      var app = bootstrap({
+        model: {
+          getAccessToken: function (token, callback) {
+            var expires = new Date();
+            expires.setSeconds(expires.getSeconds() + 20);
+            callback(false, { expires: expires });
+          }
+        }
+      });
+
+      app.use(function *(next) {
+        this.body = 'nightworld';
+        yield next;
+      });
+
+      request(app.listen())
+        .get('/')
+        .set('Authorization', 'Bearer thom')
+        .expect(/nightworld/, 200, done);
+    });
+
     it('should passthrough with valid, non-expiring token (token = null)', function (done) {
       var app = bootstrap({
         model: {
