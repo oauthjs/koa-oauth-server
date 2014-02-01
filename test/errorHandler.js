@@ -60,6 +60,7 @@ describe('Error Handler', function () {
     });
 
     app.on('error', function (err, ctx) {
+      err.type.should.equal('oauth');
       ctx.body = 'passthrough';
     });
 
