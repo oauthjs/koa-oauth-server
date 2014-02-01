@@ -6,6 +6,10 @@
   "scripts": {
     "test": "make test"
   },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/thomseddon/koa-oauth-server"
+  },
   "keywords": [
     "koa",
     "oauth",
