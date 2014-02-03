@@ -6,7 +6,7 @@ This is the koa wrap for: https://github.com/thomseddon/node-oauth2-server
 
 ## Installation
 
-  $ npm install koa-oauth-server
+    $ npm install koa-oauth-server
 
 ## Quick Start
 
