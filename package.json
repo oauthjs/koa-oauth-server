@@ -2,7 +2,7 @@
   "name": "koa-oauth-server",
   "version": "0.0.2",
   "description": "OAuth provider for koa",
-  "main": "lib/oauthServer.js",
+  "main": "index.js",
   "scripts": {
     "test": "make test"
   },
