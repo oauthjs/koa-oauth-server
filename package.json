@@ -21,7 +21,7 @@
   },
   "license": "Apache 2.0",
   "dependencies": {
-    "node-oauth2-server": "2.0.0-rc2",
+    "node-oauth2-server": "2.0.2",
     "co-body": "0.0.1"
   },
   "devDependencies": {
