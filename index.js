@@ -119,6 +119,10 @@ var handleError = function (err, server, ctx) {
   if (!server.passthroughErrors) {
     ctx.type = 'json';
     ctx.status = err.code;
+
+    if (err.headers)
+      ctx.set(err.headers);
+
     ctx.body = {};
     ['code', 'error', 'error_description'].forEach(function (key) {
       ctx.body[key] = err[key];

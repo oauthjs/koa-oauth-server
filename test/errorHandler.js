@@ -30,7 +30,6 @@ var bootstrap = function (oauthConfig) {
 };
 
 describe('Error Handler', function () {
-
   it('should return an oauth conformat response', function (done) {
     var app = bootstrap();
 
