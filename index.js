@@ -121,8 +121,11 @@ var handleError = function (err, server, ctx) {
     ctx.status = err.code;
     ctx.body = {};
     for (var key in err) {
-      if (key !== 'stack')
-        ctx.body[key] = err[key];
+      if (~['name', 'message', 'stack'].indexOf(key)) {
+        continue;
+      }
+
+      ctx.body[key] = err[key];
     }
   }
 
