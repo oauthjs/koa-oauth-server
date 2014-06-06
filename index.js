@@ -52,10 +52,11 @@ OAuthServer.prototype.authorise = function () {
   };
 
   return function *(next) {
-    if (this.request.is('application/json'))
+    
+    if (this.request.is('application/json') && typeof(this.request.body)==='string' )
       this.request.body = yield parse.json(this.request);
 
-    if (this.request.is('application/x-www-form-urlencoded'))
+    if (this.request.is('application/x-www-form-urlencoded') && typeof(this.request.body)==='string' )
       this.request.body = yield parse.form(this.request);
 
     try {
@@ -89,10 +90,10 @@ OAuthServer.prototype.grant = function () {
   };
 
   return function *(next) {
-    if (this.request.is('application/json'))
+    if (this.request.is('application/json') && typeof(this.request.body)==='string')
       this.request.body = yield parse.json(this.request);
 
-    if (this.request.is('application/x-www-form-urlencoded'))
+    if (this.request.is('application/x-www-form-urlencoded') && typeof(this.request.body)==='string')
       this.request.body = yield parse.form(this.request);
 
     // Mock the jsonp method
