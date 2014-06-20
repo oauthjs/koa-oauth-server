@@ -40,7 +40,7 @@ describe('Error Handler', function () {
       .end(function (err, res) {
         if (err) return done(err);
 
-        res.body.should.have.keys('code', 'error', 'error_description');
+        res.body.should.have.keys('code', 'error', 'error_description', 'name', 'message');
 
         res.body.code.should.be.a.Number;
         res.body.code.should.equal(res.statusCode);
