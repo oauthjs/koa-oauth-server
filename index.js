@@ -120,10 +120,9 @@ var handleError = function (err, server, ctx) {
     ctx.type = 'json';
     ctx.status = err.code;
     ctx.body = {};
-    for (var key in err) {
-      if (key !== 'stack')
-        ctx.body[key] = err[key];
-    }
+    ['code', 'error', 'error_description'].forEach(function (key) {
+      ctx.body[key] = err[key];
+    });
   }
 
   err.type = 'oauth';
