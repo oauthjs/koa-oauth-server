@@ -56,8 +56,8 @@ describe('Granting with password grant type', function () {
         client_id: 'thom',
         client_secret: 'nightworld'
       })
+      .expect('WWW-Authenticate', 'Basic realm="Service"')
       .expect(400, /missing parameters. \\"username\\" and \\"password\\"/i, done);
-
   });
 
   it('should detect invalid user', function (done) {
@@ -89,6 +89,5 @@ describe('Granting with password grant type', function () {
         password: 'nightworld'
       })
       .expect(400, /user credentials are invalid/i, done);
-
   });
 });
