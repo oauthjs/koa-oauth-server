@@ -41,7 +41,6 @@ describe('Error Handler', function () {
         if (err) return done(err);
 
         res.body.should.have.keys('code', 'error', 'error_description');
-        res.body.should.not.have.keys('name', 'message', 'stack');
 
         res.body.code.should.be.a.Number;
         res.body.code.should.equal(res.statusCode);
