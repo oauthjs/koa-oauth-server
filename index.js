@@ -61,6 +61,9 @@ OAuthServer.prototype.authorise = function () {
     try {
       yield authorise(this.request, this.response);
     } catch (err) {
+      if (self.server.passthroughErrors)
+        throw err;
+
       return handleError(err, self.server, this);
     }
 
@@ -103,6 +106,9 @@ OAuthServer.prototype.grant = function () {
     try {
       yield grant(this.request, this.response);
     } catch (err) {
+      if (self.server.passthroughErrors)
+        throw err;
+
       return handleError(err, self.server, this);
     }
 
@@ -116,18 +122,16 @@ OAuthServer.prototype.grant = function () {
  * @return {Function} middleware
  */
 var handleError = function (err, server, ctx) {
-  if (!server.passthroughErrors) {
-    ctx.type = 'json';
-    ctx.status = err.code;
+  ctx.type = 'json';
+  ctx.status = err.code;
 
-    if (err.headers)
-      ctx.set(err.headers);
+  if (err.headers)
+    ctx.set(err.headers);
 
-    ctx.body = {};
-    ['code', 'error', 'error_description'].forEach(function (key) {
-      ctx.body[key] = err[key];
-    });
-  }
+  ctx.body = {};
+  ['code', 'error', 'error_description'].forEach(function (key) {
+    ctx.body[key] = err[key];
+  });
 
   err.type = 'oauth';
 

@@ -21,8 +21,36 @@ var koa = require('koa'),
 var oauthServer = require('../');
 
 var bootstrap = function (oauthConfig) {
+  oauthConfig = oauthConfig || { model: {} };
+
   var app = koa();
-  app.oauth = oauthServer(oauthConfig || { model: {} });
+  app.oauth = oauthServer(oauthConfig);
+
+  // Error handling middleware must be added
+  // before all the others
+  if (oauthConfig.passthroughErrors === true) {
+    app.use(function *(next) {
+      try {
+        yield next;
+      } catch (e) {
+        this.body = 'Caught OAuth exception';
+      }
+    });
+  }
+
+  return app;
+};
+
+var bootstrapGrant = function (oauthConfig) {
+  var app = bootstrap(oauthConfig);
+
+  app.use(app.oauth.grant());
+
+  return app;
+};
+
+var bootstrapAuthorise = function (oauthConfig) {
+  var app = bootstrap(oauthConfig);
 
   app.use(app.oauth.authorise());
 
@@ -31,7 +59,7 @@ var bootstrap = function (oauthConfig) {
 
 describe('Error Handler', function () {
   it('should return an oauth conformat response', function (done) {
-    var app = bootstrap();
+    var app = bootstrapAuthorise();
 
     request(app.listen())
       .get('/')
@@ -52,19 +80,25 @@ describe('Error Handler', function () {
       });
   });
 
-  it('should passthrough authorise errors', function (done) {
-    var app = bootstrap({
+  it('should passthrough grant errors', function (done) {
+    var app = bootstrapGrant({
       passthroughErrors: true,
       model: {}
     });
 
-    app.on('error', function (err, ctx) {
-      err.type.should.equal('oauth');
-      ctx.body = 'passthrough';
+    request(app.listen())
+      .get('/')
+      .expect('Caught OAuth exception', done);
+  });
+
+  it('should passthrough authorise errors', function (done) {
+    var app = bootstrapAuthorise({
+      passthroughErrors: true,
+      model: {}
     });
 
     request(app.listen())
       .get('/')
-      .expect(/^passthrough$/, 200, done);
+      .expect('Caught OAuth exception', done);
   });
 });
