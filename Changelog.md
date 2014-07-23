@@ -1,5 +1,8 @@
 ## Changelog
 
+### 0.0.6
+ - Throw errors when passthroughErrors is enabled
+
 ### 0.0.5
  - Expose WWW-Authenticate headers correctly on koa response
  - Update error handler to support the new base error-inherited version of OAuth2Error
