@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-var NodeOAuthServer = require('node-oauth2-server');
+var NodeOAuthServer = require('oauth2-server');
 var parse = require('co-body');
 
 module.exports = OAuthServer;
