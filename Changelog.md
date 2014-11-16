@@ -1,5 +1,9 @@
 ## Changelog
 
+### 0.0.7
+ - Update co-body@1.0.0
+ - Update node-oauth2-server to oauth2-server@2.2.2
+
 ### 0.0.6
  - Throw errors when passthroughErrors is enabled
 
