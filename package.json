@@ -22,7 +22,7 @@
   "license": "Apache 2.0",
   "dependencies": {
     "oauth2-server": "2.2.2",
-    "co-body": "0.0.1"
+    "co-body": "~1.0.0"
   },
   "devDependencies": {
     "should": "~2.1.1",
