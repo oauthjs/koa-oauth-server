@@ -15,6 +15,7 @@
  */
 
 var koa = require('koa'),
+  bodyparser = require('koa-bodyparser'),
   request = require('supertest'),
   should = require('should');
 
@@ -44,6 +45,7 @@ var bootstrap = function (oauthConfig) {
 var bootstrapGrant = function (oauthConfig) {
   var app = bootstrap(oauthConfig);
 
+  app.use(bodyparser());
   app.use(app.oauth.grant());
 
   return app;
@@ -52,6 +54,7 @@ var bootstrapGrant = function (oauthConfig) {
 var bootstrapAuthorise = function (oauthConfig) {
   var app = bootstrap(oauthConfig);
 
+  app.use(bodyparser());
   app.use(app.oauth.authorise());
 
   return app;

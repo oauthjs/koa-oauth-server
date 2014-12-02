@@ -14,6 +14,7 @@ The module provides a single middleware:
 
 ```js
 var koa = require('koa');
+var bodyparser = require('koa-bodyparser');
 var oauthserver = require('koa-oauth-server');
 
 var app = koa();
@@ -24,6 +25,7 @@ app.oauth = oauthserver({
   debug: true
 });
 
+app.use(bodyparser());
 app.use(app.oauth.authorise());
 
 app.use(function *(next) {

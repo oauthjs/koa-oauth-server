@@ -15,6 +15,7 @@
  */
 
 var koa = require('koa'),
+  bodyparser = require('koa-bodyparser'),
   request = require('supertest'),
   should = require('should');
 
@@ -37,6 +38,7 @@ var bootstrap = function (oauthConfig) {
   var app = koa();
   app.oauth = oauthServer(oauthConfig || { model: {} });
 
+  app.use(bodyparser());
   app.use(app.oauth.authorise());
 
   app.use(function *(next) {
