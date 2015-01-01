@@ -15,6 +15,7 @@
  */
 
 var NodeOAuthServer = require('oauth2-server');
+var thenify = require('thenify');
 
 module.exports = OAuthServer;
 
@@ -41,18 +42,11 @@ function OAuthServer (config) {
 OAuthServer.prototype.authorise = function () {
 
   var self = this;
-  var expressAuthorise = this.server.authorise();
-
-  // Authorise thunk
-  var authoriseThunk = function (req, res) {
-    return function (cb) {
-      expressAuthorise(req, res, cb);
-    };
-  };
+  var expressAuthorise = thenify(this.server.authorise());
 
   return function *authorise(next) {
     try {
-      yield authoriseThunk(this.request, this.response);
+      yield expressAuthorise(this.request, this.response);
     } catch (err) {
       if (self.server.passthroughErrors)
         throw err;
@@ -75,14 +69,7 @@ OAuthServer.prototype.authorise = function () {
 OAuthServer.prototype.grant = function () {
 
   var self = this;
-  var expressGrant = this.server.grant();
-
-  // Grant thunk
-  var grantThunk = function (req, res) {
-    return function (cb) {
-      expressGrant(req, res, cb);
-    };
-  };
+  var expressGrant = thenify(this.server.grant());
 
   return function *grant(next) {
     // Mock the jsonp method
@@ -91,7 +78,7 @@ OAuthServer.prototype.grant = function () {
     };
 
     try {
-      yield grantThunk(this.request, this.response);
+      yield expressGrant(this.request, this.response);
     } catch (err) {
       if (self.server.passthroughErrors)
         throw err;

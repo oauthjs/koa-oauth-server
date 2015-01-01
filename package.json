@@ -21,7 +21,8 @@
   },
   "license": "Apache 2.0",
   "dependencies": {
-    "oauth2-server": "^2.3.0"
+    "oauth2-server": "^2.3.0",
+    "thenify": "^3.0.0"
   },
   "devDependencies": {
     "koa": "^0.14.0",
