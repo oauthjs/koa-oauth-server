@@ -1,5 +1,5 @@
 /**
- * Copyright 2014-present NightWorld.
+ * Copyright 2014-present Thom Seddon.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 var koa = require('koa'),
+  bodyparser = require('koa-bodyparser'),
   request = require('supertest'),
   should = require('should');
 
@@ -29,6 +30,7 @@ var bootstrap = function (oauthConfig) {
   var app = koa();
   app.oauth = oauth2server(oauthConfig);
 
+  app.use(bodyparser());
   app.use(app.oauth.grant());
 
   return app;
@@ -267,7 +269,7 @@ describe('Grant', function() {
         .post('/oauth/token')
         .set('Content-Type', 'application/x-www-form-urlencoded')
         .send(validBody)
-        .expect(/thommy/, 200, done);
+        .expect(200, /thommy/, done);
 
     });
 
@@ -297,7 +299,7 @@ describe('Grant', function() {
         .post('/oauth/token')
         .set('Content-Type', 'application/x-www-form-urlencoded')
         .send(validBody)
-        .expect(/"access_token":"thommy"/, 200, done);
+        .expect(200, /"access_token":"thommy"/, done);
 
     });
   });

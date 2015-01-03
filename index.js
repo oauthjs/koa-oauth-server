@@ -15,7 +15,7 @@
  */
 
 var NodeOAuthServer = require('oauth2-server');
-var parse = require('co-body');
+var thenify = require('thenify');
 
 module.exports = OAuthServer;
 
@@ -42,24 +42,11 @@ function OAuthServer (config) {
 OAuthServer.prototype.authorise = function () {
 
   var self = this;
-  var expressAuthorise = this.server.authorise();
+  var expressAuthorise = thenify(this.server.authorise());
 
-  // Authorise thunk
-  var authorise = function (req, res) {
-    return function (cb) {
-      expressAuthorise(req, res, cb);
-    };
-  };
-
-  return function *(next) {
-    if (this.request.is('application/json'))
-      this.request.body = yield parse.json(this.request);
-
-    if (this.request.is('application/x-www-form-urlencoded'))
-      this.request.body = yield parse.form(this.request);
-
+  return function *authorise(next) {
     try {
-      yield authorise(this.request, this.response);
+      yield expressAuthorise(this.request, this.response);
     } catch (err) {
       if (self.server.passthroughErrors)
         throw err;
@@ -67,7 +54,7 @@ OAuthServer.prototype.authorise = function () {
       return handleError(err, self.server, this);
     }
 
-    yield next;
+    yield *next;
   };
 };
 
@@ -82,29 +69,16 @@ OAuthServer.prototype.authorise = function () {
 OAuthServer.prototype.grant = function () {
 
   var self = this;
-  var expressGrant = this.server.grant();
+  var expressGrant = thenify(this.server.grant());
 
-  // Grant thunk
-  var grant = function (req, res) {
-    return function (cb) {
-      expressGrant(req, res, cb);
-    };
-  };
-
-  return function *(next) {
-    if (this.request.is('application/json'))
-      this.request.body = yield parse.json(this.request);
-
-    if (this.request.is('application/x-www-form-urlencoded'))
-      this.request.body = yield parse.form(this.request);
-
+  return function *grant(next) {
     // Mock the jsonp method
     this.response.jsonp = function (body) {
       this.body = JSON.stringify(body);
     };
 
     try {
-      yield grant(this.request, this.response);
+      yield expressGrant(this.request, this.response);
     } catch (err) {
       if (self.server.passthroughErrors)
         throw err;
@@ -112,7 +86,7 @@ OAuthServer.prototype.grant = function () {
       return handleError(err, self.server, this);
     }
 
-    yield next;
+    yield *next;
   };
 };
 

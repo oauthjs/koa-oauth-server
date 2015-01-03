@@ -1,5 +1,5 @@
 /**
- * Copyright 2013-present NightWorld.
+ * Copyright 2013-present Thom Seddon.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 var koa = require('koa'),
+  bodyparser = require('koa-bodyparser'),
   request = require('supertest'),
   should = require('should');
 
@@ -29,6 +30,7 @@ var bootstrap = function (oauthConfig) {
   var app = koa();
   app.oauth = oauth2server(oauthConfig);
 
+  app.use(bodyparser());
   app.use(app.oauth.grant());
 
   return app;

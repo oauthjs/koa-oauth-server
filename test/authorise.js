@@ -15,6 +15,7 @@
  */
 
 var koa = require('koa'),
+  bodyparser = require('koa-bodyparser'),
   request = require('supertest'),
   should = require('should');
 
@@ -37,6 +38,7 @@ var bootstrap = function (oauthConfig) {
   var app = koa();
   app.oauth = oauthServer(oauthConfig || { model: {} });
 
+  app.use(bodyparser());
   app.use(app.oauth.authorise());
 
   app.use(function *(next) {
@@ -62,7 +64,7 @@ describe('Authorise', function() {
 
     request(app.listen())
       .get('/?access_token=thom')
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
   it('should require application/x-www-form-urlencoded when access token is ' +
@@ -93,7 +95,7 @@ describe('Authorise', function() {
       .post('/')
       .set('Content-Type', 'application/x-www-form-urlencoded')
       .send({ access_token: 'thom' })
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
   it('should detect malformed header', function (done) {
@@ -111,7 +113,7 @@ describe('Authorise', function() {
     request(app.listen())
       .get('/')
       .set('Authorization', 'Bearer thom')
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
   it('should allow exactly one method (get: query + auth)', function (done) {
@@ -167,7 +169,7 @@ describe('Authorise', function() {
 
     request(app.listen())
       .get('/?access_token=thom')
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
   it('should expose the user id when setting userId', function (done) {
@@ -193,7 +195,7 @@ describe('Authorise', function() {
 
     request(app.listen())
       .get('/?access_token=thom')
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
   it('should expose the user id when setting user object', function (done) {
@@ -219,7 +221,7 @@ describe('Authorise', function() {
 
     request(app.listen())
       .get('/?access_token=thom')
-      .expect(/nightworld/, 200, done);
+      .expect(200, /nightworld/, done);
   });
 
 });
