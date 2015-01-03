@@ -1,6 +1,6 @@
 {
   "name": "koa-oauth-server",
-  "version": "0.0.7",
+  "version": "1.0.0",
   "description": "OAuth provider for koa",
   "main": "index.js",
   "scripts": {

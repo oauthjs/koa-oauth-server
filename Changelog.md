@@ -1,5 +1,12 @@
 ## Changelog
 
+### 1.0.0
+ - Replace thunks by promises
+ - Update readme to mention request body parsing
+ - Update copyright notices
+ - Update dependencies
+ - **[BC BREAK]** Remove body parser
+
 ### 0.0.7
  - Update co-body@1.0.0
  - Update node-oauth2-server to oauth2-server@2.2.2
