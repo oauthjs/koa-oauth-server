@@ -74,7 +74,7 @@ OAuthServer.prototype.grant = function () {
   return function *grant(next) {
     // Mock the jsonp method
     this.response.jsonp = function (body) {
-      this.body = JSON.stringify(body);
+      this.body = body;
     };
 
     try {

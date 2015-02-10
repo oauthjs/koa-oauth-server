@@ -374,6 +374,33 @@ describe('Grant', function() {
   });
 
   describe('issue access token', function () {
+    it('should return `Content-Type` application/json', function (done) {
+      var app = bootstrap({
+        model: {
+          getClient: function (id, secret, callback) {
+            callback(false, { clientId: 'thom' });
+          },
+          grantTypeAllowed: function (clientId, grantType, callback) {
+            callback(false, true);
+          },
+          getUser: function (uname, pword, callback) {
+            callback(false, { id: 1 });
+          },
+          saveAccessToken: function (token, clientId, expires, user, cb) {
+            cb();
+          }
+        },
+        grants: ['password']
+      });
+
+      request(app.listen())
+        .post('/oauth/token')
+        .set('Content-Type', 'application/x-www-form-urlencoded')
+        .send(validBody)
+        .expect(200)
+        .expect('Content-Type', 'application/json; charset=utf-8', done);
+    });
+
     it('should return an oauth compatible response', function (done) {
       var app = bootstrap({
         model: {
