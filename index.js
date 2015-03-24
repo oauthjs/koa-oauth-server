@@ -1,60 +1,85 @@
+
 /**
- * Copyright 2013-present Thom Seddon.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *    http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Module dependencies.
  */
 
+var InvalidArgumentError = require('oauth2-server/lib/errors/invalid-argument-error');
 var NodeOAuthServer = require('oauth2-server');
-var thenify = require('thenify');
-
-module.exports = OAuthServer;
+var Request = require('oauth2-server').Request;
+var Response = require('oauth2-server').Response;
+var UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
+var co = require('co');
 
 /**
- * Constructor
- *
- * @param {Object} config Configuration object
+ * Constructor.
  */
-function OAuthServer (config) {
-  if (!(this instanceof OAuthServer)) return new OAuthServer(config);
 
-  config.continueAfterResponse = true;
-  this.server = new NodeOAuthServer(config);
+function KoaOAuthServer(options) {
+  options = options || {};
+
+  if (!options.model) {
+    throw new InvalidArgumentError('Missing parameter: `model`');
+  }
+
+  for (var fn in options.model) {
+    options.model[fn] = co.wrap(options.model[fn]);
+  }
+
+  this.server = new NodeOAuthServer(options);
 }
 
 /**
- * Authorisation Middleware
+ * Authentication Middleware.
  *
- * Returns middleware that will authorise the request using oauth,
- * if successful it will allow the request to proceed to the next handler
+ * Returns a middleware that will validate a token.
  *
- * @return {Function} middleware
+ * (See: https://tools.ietf.org/html/rfc6749#section-7)
  */
-OAuthServer.prototype.authorise = function () {
 
-  var self = this;
-  var expressAuthorise = thenify(this.server.authorise());
+KoaOAuthServer.prototype.authenticate = function() {
+  var server = this.server;
 
-  return function *authorise(next) {
+  return function *(next) {
+    var request = new Request(this.request);
+
     try {
-      yield expressAuthorise(this.request, this.response);
-    } catch (err) {
-      if (self.server.passthroughErrors)
-        throw err;
-
-      return handleError(err, self.server, this);
+      this.state.oauth = {
+        token: yield server.authenticate(request)
+      };
+    } catch (e) {
+      return handleError.call(this, e);
     }
 
-    yield *next;
+    yield* next;
+  };
+};
+
+/**
+ * Authorization Middleware.
+ *
+ * Returns a middleware that will authorize a client to request tokens.
+ *
+ * (See: https://tools.ietf.org/html/rfc6749#section-3.1)
+ */
+
+KoaOAuthServer.prototype.authorize = function() {
+  var server = this.server;
+
+  return function *(next) {
+    var request = new Request(this.request);
+    var response = new Response(this.response);
+
+    try {
+      this.state.oauth = {
+        code: yield server.authorize(request, response)
+      };
+
+      handleResponse.call(this, response);
+    } catch (e) {
+      return handleError.call(this, e, response);
+    }
+
+    yield* next;
   };
 };
 
@@ -62,52 +87,63 @@ OAuthServer.prototype.authorise = function () {
  * Grant Middleware
  *
  * Returns middleware that will grant tokens to valid requests.
- * This would normally be mounted at '/oauth/token'
  *
- * @return {Function} middleware
+ * (See: https://tools.ietf.org/html/rfc6749#section-3.2)
  */
-OAuthServer.prototype.grant = function () {
 
-  var self = this;
-  var expressGrant = thenify(this.server.grant());
+KoaOAuthServer.prototype.token = function() {
+  var server = this.server;
 
-  return function *grant(next) {
-    // Mock the jsonp method
-    this.response.jsonp = function (body) {
-      this.body = body;
-    };
+  return function *(next) {
+    var request = new Request(this.request);
+    var response = new Response(this.response);
 
     try {
-      yield expressGrant(this.request, this.response);
-    } catch (err) {
-      if (self.server.passthroughErrors)
-        throw err;
+      this.state.oauth = {
+        token: yield server.token(request, response)
+      };
 
-      return handleError(err, self.server, this);
+      handleResponse.call(this, response);
+    } catch (e) {
+      return handleError.call(this, e, response);
     }
 
-    yield *next;
+    yield* next;
   };
 };
 
 /**
- * OAuth Error handler
- *
- * @return {Function} middleware
+ * Handle response.
  */
-var handleError = function (err, server, ctx) {
-  ctx.type = 'json';
-  ctx.status = err.code;
 
-  if (err.headers)
-    ctx.set(err.headers);
+var handleResponse = function(response) {
+  this.body = response.body;
+  this.status = response.status;
 
-  ctx.body = {};
-  ['code', 'error', 'error_description'].forEach(function (key) {
-    ctx.body[key] = err[key];
-  });
-
-  err.type = 'oauth';
-
-  return ctx.app.emit('error', err, ctx);
+  this.set(response.headers);
 };
+
+/**
+ * Handle error.
+ */
+
+var handleError = function(e, response) {
+  if (response) {
+    this.set(response.headers);
+  }
+
+  if (e instanceof UnauthorizedRequestError) {
+    this.status = e.code;
+  } else {
+    this.body = { error: e.name, error_description: e.message };
+    this.status = e.code;
+  }
+
+  return this.app.emit('error', e, this);
+};
+
+/**
+ * Export constructor.
+ */
+
+module.exports = KoaOAuthServer;
