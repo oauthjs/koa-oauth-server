@@ -21,6 +21,7 @@
   },
   "license": "Apache 2.0",
   "dependencies": {
+    "node-proxy": "^1.0.0",
     "oauth2-server": "^2.3.0",
     "thenify": "^3.0.0"
   },

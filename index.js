@@ -15,6 +15,7 @@
  */
 
 var NodeOAuthServer = require('oauth2-server');
+var proxy = require('node-proxy');
 var thenify = require('thenify');
 
 module.exports = OAuthServer;
@@ -46,7 +47,20 @@ OAuthServer.prototype.authorise = function () {
 
   return function *authorise(next) {
     try {
-      yield expressAuthorise(this.request, this.response);
+      
+      // proxy the request in order to force Koa's .get to return unedfined for missing headers
+      var request = this.request;
+      var requestProxy = proxy.clone(this.request);
+      requestProxy.get = function(headerName) {
+        return request.get(headerName) || undefined;
+      };
+      
+      yield expressAuthorise(requestProxy, this.response);
+      
+      // apply oauth2-server's user and oauth properties to Koa request
+      this.request.user = requestProxy.user;
+      this.request.oauth = requestProxy.oauth;
+
     } catch (err) {
       if (self.server.passthroughErrors)
         throw err;
