@@ -1,0 +1,4 @@
+--require co-mocha
+--require should
+--ui bdd
+--reporter spec

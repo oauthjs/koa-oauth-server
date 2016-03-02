@@ -1,10 +1,11 @@
 {
   "name": "koa-oauth-server",
-  "version": "1.0.1",
   "description": "OAuth provider for koa",
+  "version": "2.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "make test"
+    "lint": "jshint .",
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha 'test/**/*.js'"
   },
   "repository": {
     "type": "git",
@@ -19,16 +20,20 @@
     "name": "Thom Seddon",
     "email": "thom@nightworld.com"
   },
-  "license": "Apache 2.0",
+  "license": "MIT",
   "dependencies": {
-    "oauth2-server": "^2.3.0",
-    "thenify": "^3.0.0"
+    "co": "^4.5.1",
+    "oauth2-server": "seegno-forks/node-oauth2-server#enhancement/refactor-project"
   },
   "devDependencies": {
+    "co-mocha": "^1.1.0",
+    "co-supertest": "0.0.8",
+    "jshint": "^2.8.0",
     "koa": "^0.14.0",
-    "koa-bodyparser": "^1.3.0",
+    "koa-bodyparser": "^1.4.1",
     "mocha": "^2.0.1",
     "should": "^4.4.1",
+    "sinon": "^1.14.1",
     "supertest": "^0.15.0"
   },
   "engines": {
