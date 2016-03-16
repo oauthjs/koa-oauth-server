@@ -47,7 +47,7 @@ KoaOAuthServer.prototype.authenticate = function() {
         token: yield server.authenticate(request)
       };
     } catch (e) {
-      return handleError.call(this, e);
+      return handleError.call(this, server, e);
     }
 
     yield* next;
@@ -76,7 +76,7 @@ KoaOAuthServer.prototype.authorize = function() {
 
       handleResponse.call(this, response);
     } catch (e) {
-      return handleError.call(this, e, response);
+      return handleError.call(this, server, e, response);
     }
 
     yield* next;
@@ -105,7 +105,7 @@ KoaOAuthServer.prototype.token = function() {
 
       handleResponse.call(this, response);
     } catch (e) {
-      return handleError.call(this, e, response);
+      return handleError.call(this, server, e, response);
     }
 
     yield* next;
@@ -127,19 +127,24 @@ var handleResponse = function(response) {
  * Handle error.
  */
 
-var handleError = function(e, response) {
-  if (response) {
-    this.set(response.headers);
-  }
+var handleError = function(server, e, response) {
 
-  if (e instanceof UnauthorizedRequestError) {
-    this.status = e.code;
-  } else {
-    this.body = { error: e.name, error_description: e.message };
-    this.status = e.code;
+  if (server.options.passthroughErrors) {
+    throw e;
   }
+  else {
+    if (response) {
+      this.set(response.headers);
+    }
 
-  return this.app.emit('error', e, this);
+    if (e instanceof UnauthorizedRequestError) {
+      this.status = e.code;
+    } else {
+      this.body = { error: e.name, error_description: e.message };
+      this.status = e.code;
+    }
+    return this.app.emit('error', e, this);
+  }
 };
 
 /**

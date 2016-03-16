@@ -86,6 +86,30 @@ describe('KoaOAuthServer', function() {
         .get('/')
         .end();
     });
+
+    it('should throw (not emit) an error if `model` is empty when configured with `passthroughErrors`', function* (done) {
+      var oauth = new KoaOAuthServer({ model: {}, passthroughErrors: true });
+
+      app.use(function* (next) {
+        try {
+          yield next;
+        }
+        catch (e) {
+          e.should.be.an.instanceOf(Error);
+          done();
+        }
+      });
+
+      app.use(oauth.authenticate());
+
+      app.on('error', function() {
+        done(new Error('Error got emitted'));
+      });
+
+      yield request(app.listen())
+        .get('/')
+        .end();
+    });
   });
 
   describe('authorize()', function() {
@@ -161,6 +185,30 @@ describe('KoaOAuthServer', function() {
         .post('/')
         .end();
     });
+
+    it('should throw (not emit) an error if `model` is empty when configured with `passthroughErrors`', function* (done) {
+      var oauth = new KoaOAuthServer({ model: {}, passthroughErrors: true });
+
+      app.use(function* (next) {
+        try {
+          yield next;
+        }
+        catch (e) {
+          e.should.be.an.instanceOf(Error);
+          done();
+        }
+      });
+
+      app.use(oauth.authorize());
+
+      app.on('error', function() {
+        done(new Error('Error got emitted'));
+      });
+
+      yield request(app.listen())
+        .get('/')
+        .end();
+    });
   });
 
   describe('token()', function() {
@@ -232,6 +280,30 @@ describe('KoaOAuthServer', function() {
 
       yield request(app.listen())
         .post('/')
+        .end();
+    });
+
+    it('should throw (not emit) an error if `model` is empty when configured with `passthroughErrors`', function* (done) {
+      var oauth = new KoaOAuthServer({ model: {}, passthroughErrors: true });
+
+      app.use(function* (next) {
+        try {
+          yield next;
+        }
+        catch (e) {
+          e.should.be.an.instanceOf(Error);
+          done();
+        }
+      });
+
+      app.use(oauth.token());
+
+      app.on('error', function() {
+        done(new Error('Error got emitted'));
+      });
+
+      yield request(app.listen())
+        .get('/')
         .end();
     });
   });
