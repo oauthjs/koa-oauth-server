@@ -62,7 +62,7 @@ KoaOAuthServer.prototype.authenticate = function() {
  * (See: https://tools.ietf.org/html/rfc6749#section-3.1)
  */
 
-KoaOAuthServer.prototype.authorize = function() {
+KoaOAuthServer.prototype.authorize = function(options) {
   var server = this.server;
 
   return function *(next) {
@@ -71,7 +71,7 @@ KoaOAuthServer.prototype.authorize = function() {
 
     try {
       this.state.oauth = {
-        code: yield server.authorize(request, response)
+        code: yield server.authorize(request, response, options)
       };
 
       handleResponse.call(this, response);
