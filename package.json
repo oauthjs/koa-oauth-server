@@ -22,15 +22,16 @@
   },
   "license": "MIT",
   "dependencies": {
+    "bluebird": "^3.4.6",
     "co": "^4.5.1",
     "oauth2-server": "seegno-forks/node-oauth2-server#enhancement/refactor-project"
   },
   "devDependencies": {
-    "co-mocha": "^1.1.0",
-    "co-supertest": "0.0.8",
+    "mocha": "^1.1.0",
+    "supertest": "0.0.8",
     "jshint": "^2.8.0",
-    "koa": "^0.14.0",
-    "koa-bodyparser": "^1.4.1",
+    "koa": "2",
+    "koa-bodyparser": "^2.0.1",
     "mocha": "^2.0.1",
     "should": "^4.4.1",
     "sinon": "^1.14.1",
