@@ -14,7 +14,7 @@ var sinon = require('sinon');
  * Test `KoaOAuthServer`.
  */
 
-describe('KoaOAuthServer', function() {
+describe.skip('KoaOAuthServer', function() {
   var app;
 
   beforeEach(function() {

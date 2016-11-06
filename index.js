@@ -8,7 +8,8 @@ var NodeOAuthServer = require('oauth2-server');
 var Request = require('oauth2-server').Request;
 var Response = require('oauth2-server').Response;
 var UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
-var co = require('co');
+var Promise = require('bluebird');
+// var co = require('co');
 
 /**
  * Constructor.
@@ -21,9 +22,9 @@ function KoaOAuthServer(options) {
     throw new InvalidArgumentError('Missing parameter: `model`');
   }
 
-  for (var fn in options.model) {
-    options.model[fn] = co.wrap(options.model[fn]);
-  }
+  // for (var fn in options.model) {
+  //   options.model[fn] = co.wrap(options.model[fn]);
+  // }
 
   this.server = new NodeOAuthServer(options);
 }
@@ -39,19 +40,22 @@ function KoaOAuthServer(options) {
 KoaOAuthServer.prototype.authenticate = function() {
   var server = this.server;
 
-  return function *(next) {
-    var request = new Request(this.request);
+  return function (ctx, next) {
+    var request = new Request(ctx.request);
+    var response = new Response(ctx.response);
+    var authenticate = Promise.promisify(server.authenticate);
+    console.log('do auth');
 
-    try {
-      this.state.oauth = {
-        token: yield server.authenticate(request)
-      };
-    } catch (e) {
-      return handleError.call(this, e);
-    }
-
-    yield* next;
-  };
+    return authenticate(request, response)
+      .then(function (token) {
+        ctx.state.oauth = {
+          token: token
+        };
+      })
+      .catch(function (err) {
+        handleError.call(ctx, err);
+      });
+  }
 };
 
 /**
@@ -128,6 +132,7 @@ var handleResponse = function(response) {
  */
 
 var handleError = function(e, response) {
+
   if (response) {
     this.set(response.headers);
   }
