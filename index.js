@@ -43,17 +43,17 @@ KoaOAuthServer.prototype.authenticate = function() {
   return function (ctx, next) {
     var request = new Request(ctx.request);
     var response = new Response(ctx.response);
-    var authenticate = Promise.promisify(server.authenticate);
-    console.log('do auth');
+    var authenticate = Promise.promisify(server.authenticate, { context: server });
 
-    return authenticate(request, response)
+    return authenticate(request, response, null)
       .then(function (token) {
         ctx.state.oauth = {
           token: token
         };
+        handleResponse.call(ctx, response);
       })
       .catch(function (err) {
-        handleError.call(ctx, err);
+        handleError.call(ctx, err, response);
       });
   }
 };
@@ -69,21 +69,21 @@ KoaOAuthServer.prototype.authenticate = function() {
 KoaOAuthServer.prototype.authorize = function() {
   var server = this.server;
 
-  return function *(next) {
-    var request = new Request(this.request);
-    var response = new Response(this.response);
+  return function (ctx, next) {
+    var request = new Request(ctx.request);
+    var response = new Response(ctx.response);
+    var authorize = Promise.promisify(server.authorize, { context: server });
 
-    try {
-      this.state.oauth = {
-        code: yield server.authorize(request, response)
-      };
-
-      handleResponse.call(this, response);
-    } catch (e) {
-      return handleError.call(this, e, response);
-    }
-
-    yield* next;
+    return authorize(request, response, null)
+      .then(function (code) {
+        ctx.state.oauth = {
+          code: code
+        };
+        handleResponse.call(ctx, response);
+      })
+      .catch(function (err) {
+        handleError.call(ctx, err, response);
+      });
   };
 };
 
@@ -98,21 +98,21 @@ KoaOAuthServer.prototype.authorize = function() {
 KoaOAuthServer.prototype.token = function() {
   var server = this.server;
 
-  return function *(next) {
-    var request = new Request(this.request);
-    var response = new Response(this.response);
+  return function (ctx, next) {
+    var request = new Request(ctx.request);
+    var response = new Response(ctx.response);
+    var token = Promise.promisify(server.token, { context: server });
 
-    try {
-      this.state.oauth = {
-        token: yield server.token(request, response)
-      };
-
-      handleResponse.call(this, response);
-    } catch (e) {
-      return handleError.call(this, e, response);
-    }
-
-    yield* next;
+    return token(request, response, null)
+      .then(function (token) {
+        ctx.state.oauth = {
+          token: token
+        };
+        handleResponse.call(ctx, response);        
+      })
+      .catch(function (err) {
+        handleError.call(ctx, err, response);
+      });
   };
 };
 
