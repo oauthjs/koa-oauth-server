@@ -24,18 +24,17 @@
   "dependencies": {
     "bluebird": "^3.4.6",
     "co": "^4.5.1",
+    "koa-convert": "^1.2.0",
     "oauth2-server": "seegno-forks/node-oauth2-server#enhancement/refactor-project"
   },
   "devDependencies": {
-    "mocha": "^1.1.0",
-    "supertest": "0.0.8",
+    "mocha": "^2.0.1",
+    "supertest": "^0.15.0",
     "jshint": "^2.8.0",
     "koa": "2",
     "koa-bodyparser": "^2.0.1",
-    "mocha": "^2.0.1",
     "should": "^4.4.1",
-    "sinon": "^1.14.1",
-    "supertest": "^0.15.0"
+    "sinon": "^1.14.1"
   },
   "engines": {
     "node": ">=0.11"

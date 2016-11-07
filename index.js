@@ -4,12 +4,11 @@
  */
 
 var InvalidArgumentError = require('oauth2-server/lib/errors/invalid-argument-error');
+var UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
 var NodeOAuthServer = require('oauth2-server');
 var Request = require('oauth2-server').Request;
 var Response = require('oauth2-server').Response;
-var UnauthorizedRequestError = require('oauth2-server/lib/errors/unauthorized-request-error');
 var Promise = require('bluebird');
-// var co = require('co');
 
 /**
  * Constructor.
@@ -21,10 +20,6 @@ function KoaOAuthServer(options) {
   if (!options.model) {
     throw new InvalidArgumentError('Missing parameter: `model`');
   }
-
-  // for (var fn in options.model) {
-  //   options.model[fn] = co.wrap(options.model[fn]);
-  // }
 
   this.server = new NodeOAuthServer(options);
 }

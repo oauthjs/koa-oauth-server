@@ -7,7 +7,7 @@ var KoaOAuthServer = require('../../');
 var Request = require('oauth2-server').Request;
 var Response = require('oauth2-server').Response;
 var Koa = require('koa');
-var request = require('co-supertest');
+var request = require('supertest');
 var sinon = require('sinon');
 var Promise = require('bluebird');
 
