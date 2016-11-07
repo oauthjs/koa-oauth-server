@@ -6,77 +6,87 @@
 var KoaOAuthServer = require('../../');
 var Request = require('oauth2-server').Request;
 var Response = require('oauth2-server').Response;
-var koa = require('koa');
+var Koa = require('koa');
 var request = require('co-supertest');
 var sinon = require('sinon');
+var Promise = require('bluebird');
 
 /**
  * Test `KoaOAuthServer`.
  */
 
-describe.skip('KoaOAuthServer', function() {
+describe('KoaOAuthServer', function() {
   var app;
 
   beforeEach(function() {
-    app = koa();
+    app = new Koa();
   });
 
   describe('authenticate()', function() {
-    it('should call `authenticate()`', function *() {
+    it('should call `authenticate()`', function (done) {
       var oauth = new KoaOAuthServer({ model: {} });
 
-      sinon.stub(oauth.server, 'authenticate').returns({});
+      sinon.stub(oauth.server, 'authenticate').callsArg(3);
 
       app.use(oauth.authenticate());
 
-      yield request(app.listen())
+      request(app.listen())
         .get('/')
-        .end();
+        .end(function (err) {
+          oauth.server.authenticate.callCount.should.equal(1);
+          oauth.server.authenticate.firstCall.args.should.have.length(4);
+          oauth.server.authenticate.firstCall.args[0].should.be.an.instanceOf(Request);
+          oauth.server.authenticate.firstCall.args[3].should.be.an.instanceOf(Function);
+          oauth.server.authenticate.restore();
+          done();
+        });
 
-      oauth.server.authenticate.callCount.should.equal(1);
-      oauth.server.authenticate.firstCall.args.should.have.length(1);
-      oauth.server.authenticate.firstCall.args[0].should.be.an.instanceOf(Request);
-      oauth.server.authenticate.restore();
     });
   });
 
   describe('authorize()', function() {
-    it('should call `authorize()`', function *() {
+    it('should call `authorize()`', function (done) {
       var oauth = new KoaOAuthServer({ model: {} });
 
-      sinon.stub(oauth.server, 'authorize').returns({});
+      sinon.stub(oauth.server, 'authorize').callsArg(3);
 
       app.use(oauth.authorize());
 
-      yield request(app.listen())
+      request(app.listen())
         .get('/')
-        .end();
+        .end(function () {
+          oauth.server.authorize.callCount.should.equal(1);
+          oauth.server.authorize.firstCall.args.should.have.length(4);
+          oauth.server.authorize.firstCall.args[0].should.be.an.instanceOf(Request);
+          oauth.server.authorize.firstCall.args[1].should.be.an.instanceOf(Response);
+          oauth.server.authorize.firstCall.args[3].should.be.an.instanceOf(Function);
+          oauth.server.authorize.restore();
+          done();
+        });
 
-      oauth.server.authorize.callCount.should.equal(1);
-      oauth.server.authorize.firstCall.args.should.have.length(2);
-      oauth.server.authorize.firstCall.args[0].should.be.an.instanceOf(Request);
-      oauth.server.authorize.firstCall.args[1].should.be.an.instanceOf(Response);
-      oauth.server.authorize.restore();
     });
   });
 
   describe('token()', function() {
-    it('should call `token()`', function *() {
+    it('should call `token()`', function (done) {
       var oauth = new KoaOAuthServer({ model: {} });
 
-      sinon.stub(oauth.server, 'token').returns({});
-
+      sinon.stub(oauth.server, 'token').callsArg(3);
+      
       app.use(oauth.token());
 
-      yield request(app.listen())
+      request(app.listen())
         .get('/')
-        .end();
+        .end(function () {
+          oauth.server.token.callCount.should.equal(1);
+          oauth.server.token.firstCall.args.should.have.length(4);
+          oauth.server.token.firstCall.args[0].should.be.an.instanceOf(Request);
+          oauth.server.token.firstCall.args[1].should.be.an.instanceOf(Response);
+          oauth.server.token.firstCall.args[3].should.be.an.instanceOf(Function);
+          oauth.server.token.restore();
+          done();
+        });
 
-      oauth.server.token.callCount.should.equal(1);
-      oauth.server.token.firstCall.args.should.have.length(2);
-      oauth.server.token.firstCall.args[0].should.be.an.instanceOf(Request);
-      oauth.server.token.firstCall.args[1].should.be.an.instanceOf(Response);
-      oauth.server.token.restore();
     });
   });
 });
