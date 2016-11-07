@@ -51,6 +51,7 @@ KoaOAuthServer.prototype.authenticate = function() {
           token: token
         };
         handleResponse.call(ctx, response);
+        next();
       })
       .catch(function (err) {
         handleError.call(ctx, err, response);
