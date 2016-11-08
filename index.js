@@ -46,13 +46,14 @@ KoaOAuthServer.prototype.authenticate = function() {
           token: token
         };
         handleResponse.call(ctx, response);
-        return next();
       })
       .catch(function (err) {
         handleError.call(ctx, err, response);
+      })
+      .finally(function () {
         return next();
       });
-  }
+  };
 };
 
 /**
@@ -77,10 +78,11 @@ KoaOAuthServer.prototype.authorize = function() {
           code: code
         };
         handleResponse.call(ctx, response);
-        return next();
       })
       .catch(function (err) {
         handleError.call(ctx, err, response);
+      })
+      .finally(function () {
         return next();
       });
   };
@@ -107,11 +109,12 @@ KoaOAuthServer.prototype.token = function() {
         ctx.state.oauth = {
           token: token
         };
-        handleResponse.call(ctx, response);        
-        return next();
+        handleResponse.call(ctx, response);
       })
       .catch(function (err) {
         handleError.call(ctx, err, response);
+      })
+      .finally(function () {
         return next();
       });
   };
