@@ -9,7 +9,6 @@ var Response = require('oauth2-server').Response;
 var Koa = require('koa');
 var request = require('supertest');
 var sinon = require('sinon');
-var Promise = require('bluebird');
 
 /**
  * Test `KoaOAuthServer`.
@@ -32,7 +31,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .get('/')
-        .end(function (err) {
+        .end(function () {
           oauth.server.authenticate.callCount.should.equal(1);
           oauth.server.authenticate.firstCall.args.should.have.length(4);
           oauth.server.authenticate.firstCall.args[0].should.be.an.instanceOf(Request);

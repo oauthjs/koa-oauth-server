@@ -55,8 +55,10 @@ describe('KoaOAuthServer', function() {
       request(app.listen())
         .get('/')
         .expect({ error: 'invalid_argument', error_description: 'Invalid argument: model does not implement `getAccessToken()`' })
-        .end(function (err, res) {
-          if (err) return done(err);
+        .end(function (err) {
+          if (err) {
+            return done(err);
+          }
           done();
         });
     });
@@ -72,9 +74,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .get('/')
-        .end(function (err, res) {
-
-        });
+        .end(function () {});
     });
   });
 
@@ -103,7 +103,9 @@ describe('KoaOAuthServer', function() {
         .send({ client_id: 12345 })
         .expect('Location', 'http://example.com/?error=invalid_request&error_description=Missing%20parameter%3A%20%60response_type%60&state=foobiz')
         .end(function (err) {
-          if (err) return done(err);
+          if (err) {
+            return done(err);
+          }
           done();
         });
     });
@@ -129,8 +131,10 @@ describe('KoaOAuthServer', function() {
         .set('Authorization', 'Bearer foobar')
         .send({ client_id: 12345, response_type: 'code' })
         .expect('Location', 'http://example.com/?code=123&state=foobiz')
-        .end(function (err, res) {
-          if (err) return done(err);
+        .end(function (err) {
+          if (err) {
+            return done(err);
+          }
           done();
         });
     });
@@ -146,7 +150,9 @@ describe('KoaOAuthServer', function() {
         .post('/')
         .expect({ error: 'invalid_argument', error_description: 'Invalid argument: model does not implement `getClient()`' })
         .end(function (err) {
-          if (err) return done(err);
+          if (err) {
+            return done(err);
+          }
           done();
         });
     });
@@ -162,7 +168,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .post('/')
-        .end(function (err) {});
+        .end(function () {});
     });
   });
 
