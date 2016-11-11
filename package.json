@@ -30,7 +30,7 @@
     "mocha": "^2.0.1",
     "supertest": "^0.15.0",
     "jshint": "^2.8.0",
-    "koa": "2",
+    "koa": "next",
     "koa-bodyparser": "^2.0.1",
     "should": "^4.4.1",
     "sinon": "^1.14.1"
