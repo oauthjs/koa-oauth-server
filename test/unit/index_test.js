@@ -71,7 +71,7 @@ describe('KoaOAuthServer', function() {
       var oauth = new KoaOAuthServer({ model: {} });
 
       sinon.stub(oauth.server, 'token').callsArg(3);
-      
+
       app.use(oauth.token());
 
       request(app.listen())
