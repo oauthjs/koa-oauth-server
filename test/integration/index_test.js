@@ -50,15 +50,18 @@ describe('KoaOAuthServer', function() {
       var oauth = new KoaOAuthServer({ model: {} });
       app.use(oauth.authenticate());
 
+      // Suppress koa error output
       app.on('error', function() {});
 
       request(app.listen())
         .get('/')
         .expect({ error: 'invalid_argument', error_description: 'Invalid argument: model does not implement `getAccessToken()`' })
         .end(function (err) {
+
           if (err) {
             return done(err);
           }
+
           done();
         });
     });
@@ -74,7 +77,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .get('/')
-        .end(function () {});
+        .end();
     });
   });
 
@@ -95,6 +98,7 @@ describe('KoaOAuthServer', function() {
 
       app.use(oauth.authorize());
 
+      // Suppress koa error output
       app.on('error', function() {});
 
       request(app.listen())
@@ -103,9 +107,11 @@ describe('KoaOAuthServer', function() {
         .send({ client_id: 12345 })
         .expect('Location', 'http://example.com/?error=invalid_request&error_description=Missing%20parameter%3A%20%60response_type%60&state=foobiz')
         .end(function (err) {
+
           if (err) {
             return done(err);
           }
+
           done();
         });
     });
@@ -132,9 +138,11 @@ describe('KoaOAuthServer', function() {
         .send({ client_id: 12345, response_type: 'code' })
         .expect('Location', 'http://example.com/?code=123&state=foobiz')
         .end(function (err) {
+
           if (err) {
             return done(err);
           }
+
           done();
         });
     });
@@ -144,15 +152,18 @@ describe('KoaOAuthServer', function() {
 
       app.use(oauth.authorize());
 
+      // Suppress koa error output
       app.on('error', function() {});
 
       request(app.listen())
         .post('/')
         .expect({ error: 'invalid_argument', error_description: 'Invalid argument: model does not implement `getClient()`' })
         .end(function (err) {
+
           if (err) {
             return done(err);
           }
+
           done();
         });
     });
@@ -168,7 +179,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .post('/')
-        .end(function () {});
+        .end();
     });
   });
 
@@ -243,7 +254,7 @@ describe('KoaOAuthServer', function() {
 
       request(app.listen())
         .post('/')
-        .end(function () {});
+        .end();
     });
   });
 });
