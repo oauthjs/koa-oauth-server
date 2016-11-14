@@ -73,7 +73,7 @@ KoaOAuthServer.prototype.authorize = function() {
     var response = new Response(ctx.response);
     var authorize = Promise.promisify(server.authorize, { context: server });
 
-    // pass `null` for 3rd argument as NodeOAuthServer#authenticate expects callback as 4th argument
+    // pass `null` for 3rd argument as NodeOAuthServer#authorize expects callback as 4th argument
     return authorize(request, response, null)
       .then(function (code) {
         ctx.state.oauth = {
@@ -106,7 +106,7 @@ KoaOAuthServer.prototype.token = function() {
     var response = new Response(ctx.response);
     var token = Promise.promisify(server.token, { context: server });
 
-    // pass `null` for 3rd argument as NodeOAuthServer#authenticate expects callback as 4th argument
+    // pass `null` for 3rd argument as NodeOAuthServer#token expects callback as 4th argument
     return token(request, response, null)
       .then(function (token) {
         ctx.state.oauth = {
