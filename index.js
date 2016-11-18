@@ -15,6 +15,7 @@ var Promise = require('bluebird');
  */
 
 function KoaOAuthServer(options) {
+
   options = options || {};
 
   if (!options.model) {
@@ -33,9 +34,11 @@ function KoaOAuthServer(options) {
  */
 
 KoaOAuthServer.prototype.authenticate = function() {
+
   var server = this.server;
 
   return function (ctx, next) {
+
     var request = new Request(ctx.request);
     var response = new Response(ctx.response);
     var authenticate = Promise.promisify(server.authenticate, { context: server });
@@ -43,16 +46,21 @@ KoaOAuthServer.prototype.authenticate = function() {
     // pass `null` for 3rd argument as NodeOAuthServer#authenticate expects callback as 4th argument
     return authenticate(request, response, null)
       .then(function (token) {
+
         ctx.state.oauth = {
           token: token
         };
+
         handleResponse.call(ctx, response);
+
+        return next();
       })
       .catch(function (err) {
+
+        if (server.options.passthroughErrors)
+          throw err;
+
         handleError.call(ctx, err, response);
-      })
-      .finally(function () {
-        return next();
       });
   };
 };
@@ -66,9 +74,11 @@ KoaOAuthServer.prototype.authenticate = function() {
  */
 
 KoaOAuthServer.prototype.authorize = function() {
+
   var server = this.server;
 
   return function (ctx, next) {
+
     var request = new Request(ctx.request);
     var response = new Response(ctx.response);
     var authorize = Promise.promisify(server.authorize, { context: server });
@@ -76,16 +86,21 @@ KoaOAuthServer.prototype.authorize = function() {
     // pass `null` for 3rd argument as NodeOAuthServer#authorize expects callback as 4th argument
     return authorize(request, response, null)
       .then(function (code) {
+
         ctx.state.oauth = {
           code: code
         };
+
         handleResponse.call(ctx, response);
+
+        return next();
       })
       .catch(function (err) {
+
+        if (server.options.passthroughErrors)
+          throw err;
+
         handleError.call(ctx, err, response);
-      })
-      .finally(function () {
-        return next();
       });
   };
 };
@@ -99,9 +114,11 @@ KoaOAuthServer.prototype.authorize = function() {
  */
 
 KoaOAuthServer.prototype.token = function() {
+
   var server = this.server;
 
   return function (ctx, next) {
+
     var request = new Request(ctx.request);
     var response = new Response(ctx.response);
     var token = Promise.promisify(server.token, { context: server });
@@ -109,16 +126,21 @@ KoaOAuthServer.prototype.token = function() {
     // pass `null` for 3rd argument as NodeOAuthServer#token expects callback as 4th argument
     return token(request, response, null)
       .then(function (token) {
+
         ctx.state.oauth = {
           token: token
         };
+
         handleResponse.call(ctx, response);
+
+        return next();
       })
       .catch(function (err) {
+
+        if (server.options.passthroughErrors)
+          throw err;
+
         handleError.call(ctx, err, response);
-      })
-      .finally(function () {
-        return next();
       });
   };
 };
@@ -128,6 +150,7 @@ KoaOAuthServer.prototype.token = function() {
  */
 
 var handleResponse = function(response) {
+
   this.body = response.body;
   this.status = response.status;
 
