@@ -32,7 +32,7 @@
     "koa": "^0.14.0",
     "koa-bodyparser": "^1.4.1",
     "mocha": "^2.0.1",
-    "should": "^4.4.1",
+    "should": "^13.2.3",
     "sinon": "^1.14.1",
     "supertest": "^0.15.0"
   },
