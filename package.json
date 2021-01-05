@@ -29,7 +29,7 @@
     "co-mocha": "^1.1.0",
     "co-supertest": "0.0.8",
     "jshint": "^2.8.0",
-    "koa": "^0.14.0",
+    "koa": "^2.13.1",
     "koa-bodyparser": "^1.4.1",
     "mocha": "^2.0.1",
     "should": "^4.4.1",
